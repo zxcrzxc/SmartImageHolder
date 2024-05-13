@@ -7,6 +7,9 @@
             <p>Id: {{$album->id}}</p>
             <p>Name: {{$album->name}}</p>
             <p>HashTag: {{$album->hashtag}}</p>
+
+            <img class="imageView" src="{{ asset('images/'.$images[$count++][0]->name) }}" alt="tag">
+
             <div class="displayFlexForMainPage">
 
                 <form action="{{route('albums.edit', ['id'=>$album->id])}}" method="GET">

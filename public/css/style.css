@@ -9,9 +9,83 @@
     border-style: solid;
     border-width: 2px;
     border-radius:10%;
-    height: 200px;
-    width: 15%;
+    height: auto;
+    width: auto;
 }
 .wth{
     display:list-item ;
+}
+.imageView{
+    height: 150px;
+    width:auto;
+}
+.imageViewInAlbum{
+    height: 200px;
+    width:auto;
+}
+.header{
+    background-color:#707070;
+    display: flex;
+    font-size: 20px;
+    align-items: center;}
+.linkToPage{
+    margin-left: 1%;
+    margin-right: 1%;
+    /*background-color: blueviolet;*/
+    color: black;}
+.LoginPage{
+    /*background-color: brown;*/
+    color: black;
+    margin-left: auto;
+}
+
+.header a {
+    text-decoration: none;
+    outline: none;
+    text-decoration: none;}
+/*.header a:link {
+color: #265301;
+}*/
+.header a:visited {
+    color: #000000; }
+.header a:hover {
+    border-bottom: 1px solid;
+    background: rgb(80, 80, 80);}
+.header a:active {
+    background: rgb(75, 75, 75);
+    color: black;}
+.registrDiv{
+    margin-top: 1%;
+    font-size: 20px;
+    margin-left: auto;
+    margin-right: auto;
+    height: 25%;
+    width: auto;
+    display: table;
+    background-color: #707070;}
+.registrRow{
+    display: table-row;
+}
+.registrCell{
+    display: table-cell;
+}
+.btrflyimage{
+    height: 250px;
+    width: auto;
+    
+}
+.mainPageRow{
+    display: table-row;
+}
+.mainPageCell{
+    display: table-cell;
+}
+.mainPageBox{
+    margin-top: 1%;
+    font-size: 20px;
+    margin-left: auto;
+    margin-right: auto;
+    height: 25%;
+    width: 50%;
+    display: table;
 }

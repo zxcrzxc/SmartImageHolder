@@ -9,7 +9,15 @@ class Albums extends Controller
 {
     public function curse_index(){
         $result = DB::select('Select * from `albums`');
-        return view('image.albumsViewer',['albums'=>$result]);
+        //dd(sizeof($result));
+        $images=array();
+        for ($i = 0;$i<sizeof($result);$i++){
+            $images[$i] = DB::select('Select `name` from `images` where album=? Limit 1',[$result[$i]->id]);
+        }
+        //dd($images[0][0]);
+        //dd(number_format( $result[0]->id));
+        $count=0;
+        return view('image.albumsViewer',['albums'=>$result, 'images'=>$images, 'count'=>$count]);
     }
     public function curse_create_album_get(){
         return view('image.uploadAlbum');
@@ -33,7 +41,8 @@ class Albums extends Controller
     }
     public function album_edit(string $id){
         $result = DB::select('Select * from `albums` where id=?',[$id]);
-        return view('image.editAlbum',['album'=>$result[0]]);
+        $images = DB::select('Select `name` from `images` where album=?',[$id]);
+        return view('image.editAlbum',['album'=>$result[0]],['img'=>$images]);
     }
     public function album_update(Request $request, string $id){
         DB::update('UPDATE `albums` SET `name`= ?,`hashtag`=? WHERE id=?',
@@ -59,5 +68,18 @@ class Albums extends Controller
     public function album_destroy(string $id){
         DB::delete('DELETE FROM `albums` WHERE id=?',[$id]);
         return redirect()->back();
+    }
+    public function deleteImagePost(string $name){
+        DB::delete('DELETE FROM `images` WHERE name=?',[$name]);
+        return redirect()->back();
+    }
+    public function registrationPage(){
+        return view('image.registrationPage');
+    }
+    public function loginPage(){
+        return view('image.loginPage');
+    }
+    public function main_page(){
+        return view('image.mainPage');
     }
 }
