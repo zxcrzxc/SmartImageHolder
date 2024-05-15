@@ -8,10 +8,12 @@
             <p>Название: {{$album->name}}</p>
             <p>Описание: {{$album->hashtag}}</p>
 
+            
             @if ($images[$count])
-            <img class="imageView" src="{{ asset('images/'.$images[$count++][0]->name) }}" alt="tag">
+                <img class="imageView" src="{{ asset('images/'.$images[$count++][0]->name) }}" alt="tag">
             @else
-            <img class="imageView" src="{{ asset('images/noimage.jpg') }}" alt="tag">
+            <input type = "hidden" value="{{$count++}}"/>
+                <img class="imageView" src="{{ asset('images/noimage.jpg') }}" alt="tag">
             @endif
             
 
