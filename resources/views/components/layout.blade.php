@@ -12,10 +12,10 @@
         <h1 style="margin-left: 2%;margin-right: 1%;">Gallery</h1>
         <a href="{{route('main_page')}}" class="linkToPage">Главная</a>
         <a href="{{route('albums_main')}}" class="linkToPage">Альбомы</a>
-        <a href="" class="linkToPage">Семья</a>
+        <!--<a href="" class="linkToPage">Семья</a>-->
         
-        <a href="{{route('loginPage')}}" class="LoginPage">LogIn</a>
-        <a href="{{route('registrationPage')}}" class="linkToPage">Registration</a>
+        <a href="{{route('loginPage')}}" class="LoginPage">Войти</a>
+        <a href="{{route('registrationPage')}}" class="linkToPage">Зарегистрироваться</a>
     </div>
 		{{ $slot }}
 	</body >

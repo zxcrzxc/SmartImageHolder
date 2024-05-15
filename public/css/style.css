@@ -86,6 +86,24 @@ color: #265301;
     margin-left: auto;
     margin-right: auto;
     height: 25%;
-    width: 50%;
+    width: 80%;
     display: table;
+}
+.posit{
+    
+    margin-left: auto;
+    margin-right: auto;
+    width: 40%;
+}
+.create{
+    border-radius: 20%;
+    border-width: 20px;
+    border-style: inset;
+    padding: 1%;
+    border-color: #707070;
+    background-color: #909090;
+    margin-top: 2%;
+    margin-left: auto;
+    margin-right: auto;
+    width: 15%;
 }
