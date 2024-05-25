@@ -14,8 +14,14 @@
         <a href="{{route('albums_main')}}" class="linkToPage">Альбомы</a>
         <!--<a href="" class="linkToPage">Семья</a>-->
         
-        <a href="{{route('loginPage')}}" class="LoginPage">Войти</a>
-        <a href="{{route('registrationPage')}}" class="linkToPage">Зарегистрироваться</a>
+
+		@if (isset($_SESSION["username"]))
+			<a href="{{route('myaccount')}}" class="LoginPage">Личный кабинет</a>
+			<a href="{{route('logoutPagePost')}}" class="linkToPage">Выйти</a>
+		@else
+			<a href="{{route('loginPage')}}" class="LoginPage">Войти</a>
+			<a href="{{route('registrationPage')}}" class="linkToPage">Зарегистрироваться</a>
+		@endif
     </div>
 		{{ $slot }}
 	</body >

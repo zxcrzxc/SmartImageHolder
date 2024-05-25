@@ -17,12 +17,15 @@ Route::get('/create_album', [Albums::class, 'curse_create_album_get'])->name('al
 Route::post('/create_album',[Albums::class,'curse_create_album_post']);
 
 Route::get('/albums',[Albums::class, 'curse_index'])->name('albums_main');
+Route::get('/my_albums',[Albums::class, 'my_albums'])->name('my_albums');
+
 Route::get('/',[Albums::class, 'main_page'])->name('main_page');
 //Route::get('/albums',[Albums::class, 'curse_index'])->name('albums_main');
 Route::get('/editAlbum/{id}',[Albums::class, 'album_edit'])->name('albums.edit');
 Route::put('/editAlbum/{id}',[Albums::class,'album_update'])->name('albums.update');
 
 Route::get('/album/{id}', [Albums::class, 'album_show'])->name('album.show');
+
 Route::delete('/album/{id}', [Albums::class,'album_destroy'])->name('albums.destroy');
 
 Route::get('/editAlbumAddImages/{id}',[Albums::class, 'addImage'])->name('albums.addImages');
@@ -30,7 +33,20 @@ Route::post('/editAlbumAddImages/{id}',[Albums::class, 'addImagePost'])->name('a
 Route::post('/deleteImage/{name}',[Albums::class, 'deleteImagePost'])->name('albums.deleteImage');
 
 Route::get('/registration',[Albums::class, 'registrationPage'])->name('registrationPage');
+Route::post('/registrationPost',[Albums::class, 'registrationPagePost'])->name('registrationPagePost');
+
+
 Route::get('/login',[Albums::class, 'loginPage'])->name('loginPage');
+Route::post('/login',[Albums::class, 'loginPagePost'])->name('loginPagePost');
+Route::get('/logout',[Albums::class, 'logoutPagePost'])->name('logoutPagePost');
+
+Route::get('/myAccount',[Albums::class, 'myaccount'])->name('myaccount');
+Route::get('/changeMyAcc',[Albums::class, 'changeMyAcc'])->name('changeMyAcc');
+Route::put('/changeMyAcc',[Albums::class, 'changeMyAccPost'])->name('changeMyAccPost');
+
+Route::get('/changeMyAccPwd',[Albums::class, 'changeMyAccPwd'])->name('changeMyAccPwd');
+Route::put('/changeMyAccPwdPost',[Albums::class, 'changeMyAccPwdPost'])->name('changeMyAccPwdPost');
+
 
 //Route::get('/', function () {
 // return view('myView');
