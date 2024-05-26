@@ -9,12 +9,16 @@
         <br>
         <div>
         <div>
-            Название: <input type="text" name="name" id="" value="{{ $album->name }}">
+            Название: <input type="text" name="name" value="{{ $album->name }}">
         </div>
         <br>
         <div> 
-            Описание: <textarea type="text" name="hashtag" id="">{{ $album->hashtag }}</textarea>
+            Описание: <textarea type="text" name="decr" >{{ $album->hashtag }}</textarea>
         </div>
+        <div> 
+            Хештеги: <textarea type="text" name="hashtag" >{{$hashtag_string}}</textarea>
+        </div>
+        
         <br>
         <button>Готово</button>
     </form>

@@ -7,6 +7,7 @@
             <!--<p>Id: {{$album->id}}</p>-->
             <p>Название: {{$album->name}}</p>
             <p>Описание: {{$album->hashtag}}</p>
+            <p>Хештеги: {{$hashtags[$count]}}</p>
             <p>Автор: {{$autors[$count][0]->email}}</p>
             
             

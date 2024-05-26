@@ -3,6 +3,7 @@
 <div>    
     <p>Название: {{$album->name}}</p>
     <p>Описание: {{$album->hashtag}}</p> 
+    <p>Хештеги: {{$hashtags}}</p>
 
     <div>
     @foreach ($img as $im)

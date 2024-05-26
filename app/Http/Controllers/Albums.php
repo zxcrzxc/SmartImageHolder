@@ -9,81 +9,143 @@ use DateTime;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use DateTimeZone;
+use Illuminate\Support\Facades\File; 
+
 
 class Albums extends Controller
 {
+
+    public function array_of_tags_to_string($get_tags_from_db){
+        $tags=array();
+        for($i=0;$i<sizeof($get_tags_from_db);$i++)
+            $tags[$i]=$get_tags_from_db[$i]->hashtag;
+        $hashtag_string=implode(', ',$tags);
+        return $hashtag_string;
+    }
+    public function string_of_tags_to_array_from_request($request, $tag_for_search){
+        $tags=$request->all();
+        $tags=$tags[$tag_for_search];
+        $tags=str_replace(' ','',$tags);
+        $tags_array=array();
+        $tags_array=explode(",",$tags);
+        return $tags_array;
+    }
+
     public function curse_index(){
         $result = DB::select('Select * from `albums`');
-        //$autors = DB::select('Select `id` from `album_users` where ');
-        //dd(sizeof($result));
+        
         $images=array();
         $autors=array();
+        $hashtags=array();
+
         for ($i = 0;$i<sizeof($result);$i++){
             $images[$i] = DB::select('Select `name` from `images` where album=? Limit 1',[$result[$i]->id]);
             $autors[$i] = DB::select('Select `email` from `album_users` where id=?',[$result[$i]->creater_id]);
+            $hashtags[$i] = DB::select('Select `hashtag` from `hashtags` where album_id=?',[$result[$i]->id]);
         }
-        //dump($autors);
-        //dd($images[0][0]);
-        //dd(number_format( $result[0]->id));
+        
+        $hashtag_strings_arrag=array();
+        for($i=0;$i<sizeof($hashtags);$i++)
+            $hashtag_strings_arrag[$i]=Albums::array_of_tags_to_string($hashtags[$i]);
+    
         $count=0;
-        return view('image.albumsViewer',['albums'=>$result, 'images'=>$images, 'autors'=>$autors ,'count'=>$count]);
+        return view('image.albumsViewer',['albums'=>$result, 'images'=>$images, 'autors'=>$autors ,'count'=>$count,'hashtags'=>$hashtag_strings_arrag]);
     }
     public function curse_create_album_get(){
         return view('image.uploadAlbum');
     }
     public function curse_create_album_post(Request $req){
-        $arrayWithData = $req->all();
-        
-        DB::insert('INSERT INTO `albums`(`name`, `hashtag`,`creater_id`) VALUES (?, ?, ?)', 
-        [$arrayWithData['title'], $arrayWithData['hashtag'], $_SESSION['id']]);
-
-        
-
-        $last_id = DB::select('SELECT `id` FROM `albums` ORDER by `id` DESC LIMIT 1');
-        //dump($last_id[0]->id);
-        return redirect()->route('album.show',['id'=>$last_id[0]->id]);
+        if (isset($_SESSION["username"])){
+            $arrayWithData = $req->all();
+            
+            DB::insert('INSERT INTO `albums`(`name`, `hashtag`,`creater_id`) VALUES (?, ?, ?)', 
+            [$arrayWithData['title'], $arrayWithData['desc'], $_SESSION['id']]);
+            
+            $last_id = DB::select('SELECT `id` FROM `albums` ORDER by `id` DESC LIMIT 1');
+            $last_id=$last_id[0]->id;
+            
+            $array_of_tags=Albums::string_of_tags_to_array_from_request($req,'hashtag');
+            for ($i=0;$i<sizeof($array_of_tags);$i++)                
+                DB::insert('INSERT INTO `hashtags`(`album_id`,`hashtag`) VALUES (?, ?)', 
+                [$last_id, $array_of_tags[$i]]);
+            return redirect()->route('my_albums');
+        }
+        else return redirect()->route('main_page');
     }
     public function album_show(Request $request, string $id){
         $result = DB::select('Select * from `albums` where id=?',[$id]);
         $images = DB::select('Select `name` from `images` where album=?',[$id]);
-        
+        $hashtags_select = DB::select('Select `hashtag` from `hashtags` where album_id=?',[$id]);
+        $hashtags_string = Albums::array_of_tags_to_string($hashtags_select);
         $redirect2AllAlbums=$request->all();
 
         return view('image.showAlbum',['album'=>$result[0],'img'=>$images,
-        'redirect2AllAlbums'=>$redirect2AllAlbums['redirect2AllAlbums']]);
+        'redirect2AllAlbums'=>$redirect2AllAlbums['redirect2AllAlbums'], 'hashtags'=>$hashtags_string]);
     }
     public function album_edit(string $id){
-        $result = DB::select('Select * from `albums` where id=?',[$id]);
-        $images = DB::select('Select `name` from `images` where album=?',[$id]);
-        return view('image.editAlbum',['album'=>$result[0]],['img'=>$images]);
+        if (isset($_SESSION["username"])){
+            $result = DB::select('Select * from `albums` where id=?',[$id]);
+            $images = DB::select('Select `name` from `images` where album=?',[$id]);
+            $get_tags_from_db=DB::select('SELECT `hashtag` from `hashtags` where `album_id`=?',[$id]);
+            
+            $hashtag_string=Albums::array_of_tags_to_string($get_tags_from_db);
+            return view('image.editAlbum',['album'=>$result[0],'img'=>$images,'hashtag_string'=>$hashtag_string]);
+        }
+        else return redirect()->route('main_page');
     }
     public function album_update(Request $request, string $id){
         DB::update('UPDATE `albums` SET `name`= ?,`hashtag`=? WHERE id=?',
-        [$request->name,$request->hashtag,$id]);
-        return redirect()->route('album.show',['id'=>$id]);
+        [$request->name,$request->decr,$id]);
+
+        $tags_array=Albums::string_of_tags_to_array_from_request($request,'hashtag');
+
+        DB::delete('DELETE FROM `hashtags` WHERE album_id=?',[$id]);
+        for($i=0;$i<sizeof($tags_array);$i++)
+            DB::insert('INSERT INTO `hashtags`(`album_id`,`hashtag`) VALUES (?, ?)', 
+            [$id, $tags_array[$i]]);
+        return redirect()->route('my_albums');
     }
     public function addImage(string $id){
-        $result = DB::select('Select * from `albums` where id=?',[$id]);
-        return view('image.addImages',['album'=>$result[0]]);
+        if (isset($_SESSION["username"])){
+            $result = DB::select('Select * from `albums` where id=?',[$id]);
+            return view('image.addImages',['album'=>$result[0]]);
+        }
+        else return redirect()->route('main_page');
     }
     public function addImagePost(Request $req){
         for ($i=0;$i<sizeof($req->img);$i++){
             //Преобразование названия изображения для его дальнейшего сохранения
             //счетчик-время.png(или другие)
-            $filename = $i.'-'.time().'.'.$req->img[$i]->getClientOriginalExtension();
+            $filename = time().'-'.$i.'.'.$req->img[$i]->getClientOriginalExtension();
             //dump($req->id);
             request()->img[$i]->move(public_path('images'), $filename);
 
             DB::insert('INSERT INTO `images`(`name`, `album`) VALUES (?, ?)', [$filename, $req->id]);
         }
-        return redirect()->route('album.show',['id'=>$req->id]);
+        return redirect()->route('album.show',['id'=>$req->id,'redirect2AllAlbums'=>false]);
     }
     public function album_destroy(string $id){
-        DB::delete('DELETE FROM `albums` WHERE id=?',[$id]);
-        return redirect()->back();
+        //dump($_SESSION["username"]);
+
+        if (isset($_SESSION["username"])){
+            $image_name_array=array();
+            $image_name_select=DB::select('SELECT `name` FROM `images` WHERE album=?',[$id]);
+            for($i=0;$i<sizeof($image_name_select);$i++){
+                $image_name_array[$i]='\images\\'.$image_name_select[$i]->name;
+                File::delete(public_path($image_name_array[$i]));
+                //unlink($image_name_array[$i]);
+            }
+
+            DB::delete('DELETE FROM `albums` WHERE id=?',[$id]);
+            DB::delete('DELETE FROM `images` WHERE album=?',[$id]);
+            DB::delete('DELETE FROM `hashtags` WHERE album_id=?',[$id]);
+            return redirect()->route('my_albums');
+        }
+        else return redirect()->route('main_page');
     }
     public function deleteImagePost(string $name){
         DB::delete('DELETE FROM `images` WHERE name=?',[$name]);
+        File::delete(public_path('\images\\'.$name));
         return redirect()->back();
     }
     public function registrationPage(){
@@ -209,13 +271,19 @@ class Albums extends Controller
             $result = DB::select('Select * from `albums` where `creater_id`=?',[$_SESSION['id']]);
             //dd(sizeof($result));
             $images=array();
+            $hashtags=array();
             for ($i = 0;$i<sizeof($result);$i++){
                 $images[$i] = DB::select('Select `name` from `images` where album=? Limit 1',[$result[$i]->id]);
+                $hashtags[$i] = DB::select('Select `hashtag` from `hashtags` where album_id=?',[$result[$i]->id]);
             }
+            $hashtag_strings_arrag=array();
+            for($i=0;$i<sizeof($hashtags);$i++)
+                $hashtag_strings_arrag[$i]=Albums::array_of_tags_to_string($hashtags[$i]);
+        
             //dd($images[0][0]);
             //dd(number_format( $result[0]->id));
             $count=0;
-            return view('image.myAccAlbumsViewer',['albums'=>$result, 'images'=>$images, 'count'=>$count]);
+            return view('image.myAccAlbumsViewer',['albums'=>$result, 'images'=>$images, 'count'=>$count,'hashtags'=>$hashtag_strings_arrag]);
         }
         else return redirect()->route('main_page');
     }
