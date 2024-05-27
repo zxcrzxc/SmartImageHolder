@@ -47,7 +47,7 @@ Route::put('/changeMyAcc',[Albums::class, 'changeMyAccPost'])->name('changeMyAcc
 Route::get('/changeMyAccPwd',[Albums::class, 'changeMyAccPwd'])->name('changeMyAccPwd');
 Route::put('/changeMyAccPwdPost',[Albums::class, 'changeMyAccPwdPost'])->name('changeMyAccPwdPost');
 
-
+Route::get('/searchWithTags',[Albums::class, 'searchWithTags'])->name('searchWithTags');
 //Route::get('/', function () {
 // return view('myView');
 //});

@@ -65,9 +65,10 @@ class Albums extends Controller
             $last_id=$last_id[0]->id;
             
             $array_of_tags=Albums::string_of_tags_to_array_from_request($req,'hashtag');
-            for ($i=0;$i<sizeof($array_of_tags);$i++)                
-                DB::insert('INSERT INTO `hashtags`(`album_id`,`hashtag`) VALUES (?, ?)', 
-                [$last_id, $array_of_tags[$i]]);
+            for ($i=0;$i<sizeof($array_of_tags);$i++)    {            
+                $array_of_tags[$i]=strtolower($array_of_tags[$i]);
+                DB::insert('INSERT INTO `hashtags`(`album_id`,`hashtag`) VALUES (?, ?)',[$last_id, $array_of_tags[$i]]);
+            }
             return redirect()->route('my_albums');
         }
         else return redirect()->route('main_page');
@@ -100,9 +101,11 @@ class Albums extends Controller
         $tags_array=Albums::string_of_tags_to_array_from_request($request,'hashtag');
 
         DB::delete('DELETE FROM `hashtags` WHERE album_id=?',[$id]);
-        for($i=0;$i<sizeof($tags_array);$i++)
+        for($i=0;$i<sizeof($tags_array);$i++){
+            $tags_array[$i]=strtolower($tags_array[$i]);
             DB::insert('INSERT INTO `hashtags`(`album_id`,`hashtag`) VALUES (?, ?)', 
             [$id, $tags_array[$i]]);
+        }
         return redirect()->route('my_albums');
     }
     public function addImage(string $id){
@@ -287,4 +290,61 @@ class Albums extends Controller
         }
         else return redirect()->route('main_page');
     }
+
+    public function searchWithTags(Request $req){
+        $array_of_tags=array();
+        $array_of_tags=(Albums::string_of_tags_to_array_from_request($req,'search_hashtags'));
+
+        $select_array=array();
+        for($i=0;$i<sizeof($array_of_tags);$i++)
+            $select_array[$i]=DB::select('SELECT * FROM `hashtags` WHERE `hashtag`=?',[$array_of_tags[$i]]);
+    
+        $array_of_id=array();
+        $array_count_of_tags=array();
+
+        for($j=0;$j<sizeof($select_array[0]);$j++){
+            $array_of_id[$j]=$select_array[0][$j]->album_id;
+            $array_count_of_tags[$j]=1;
+        }
+
+        for($i=0;$i<sizeof($array_of_id);$i++)
+            for($j=0;$j<sizeof($select_array);$j++)
+                for($g=0;$g<sizeof($select_array[$j]);$g++)
+                    if($array_of_id[$i]==$select_array[$j][$g]->album_id)
+                        $array_count_of_tags[$i]++;
+
+        $use_alb=array();
+        $count_of_albums=0;
+        for($i=0;$i<sizeof($array_of_id);$i++)
+            if ($array_count_of_tags[$i]==sizeof($array_of_tags)+1)
+                $use_alb[$count_of_albums++]=$array_of_id[$i];
+            
+        $resultative_search_array=array();
+        for ($i=0;$i<sizeof($use_alb);$i++)
+            $resultative_search_array[$i]=DB::select('SELECT * from `albums` WHERE `id`=?',[$use_alb[$i]]);
+        
+        $result=array();
+
+        for ($i=0;$i<sizeof($use_alb);$i++)
+            $result[$i]=$resultative_search_array[$i][0];
+        
+        $images=array();
+        $autors=array();
+        $hashtags=array();
+
+        for ($i = 0;$i<sizeof($result);$i++){
+            $images[$i] = DB::select('Select `name` from `images` where album=? Limit 1',[$result[$i]->id]);
+            $autors[$i] = DB::select('Select `email` from `album_users` where id=?',[$result[$i]->creater_id]);
+            $hashtags[$i] = DB::select('Select `hashtag` from `hashtags` where album_id=?',[$result[$i]->id]);
+        }
+        
+        $hashtag_strings_arrag=array();
+        for($i=0;$i<sizeof($hashtags);$i++)
+            $hashtag_strings_arrag[$i]=Albums::array_of_tags_to_string($hashtags[$i]);
+    
+        $count=0;
+        return view('image.albumsViewer',['albums'=>$result, 'images'=>$images, 'autors'=>$autors ,'count'=>$count,'hashtags'=>$hashtag_strings_arrag]);
+        
+    }
+
 }

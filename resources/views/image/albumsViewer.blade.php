@@ -1,6 +1,10 @@
 <x-layout>
 
 <div>
+    <form action="{{ route('searchWithTags') }}" method="GET">
+        <input type="text" name="search_hashtags" value="">
+        <button>Искать</button>
+    </form>
     <div class="displayFlexForMainPage">
                 @foreach ($albums as $album)
         <div class="displayElementsFlexForMainPage">
