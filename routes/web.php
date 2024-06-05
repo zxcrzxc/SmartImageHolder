@@ -20,7 +20,6 @@ Route::get('/albums',[Albums::class, 'curse_index'])->name('albums_main');
 Route::get('/my_albums',[Albums::class, 'my_albums'])->name('my_albums');
 
 Route::get('/',[Albums::class, 'main_page'])->name('main_page');
-//Route::get('/albums',[Albums::class, 'curse_index'])->name('albums_main');
 Route::get('/editAlbum/{id}',[Albums::class, 'album_edit'])->name('albums.edit');
 Route::put('/editAlbum/{id}',[Albums::class,'album_update'])->name('albums.update');
 
@@ -31,12 +30,13 @@ Route::delete('/album/{id}', [Albums::class,'album_destroy'])->name('albums.dest
 Route::get('/editAlbumAddImages/{id}',[Albums::class, 'addImage'])->name('albums.addImages');
 Route::post('/editAlbumAddImages/{id}',[Albums::class, 'addImagePost'])->name('albums.addImages');
 Route::post('/deleteImage/{name}',[Albums::class, 'deleteImagePost'])->name('albums.deleteImage');
+Route::post('/deleteUserPhotoPost/{name}',[Albums::class, 'deleteUserPhotoPost'])->name('albums.deleteUserPhotoPost');
 
 Route::get('/registration',[Albums::class, 'registrationPage'])->name('registrationPage');
 Route::post('/registrationPost',[Albums::class, 'registrationPagePost'])->name('registrationPagePost');
 
-
 Route::get('/login',[Albums::class, 'loginPage'])->name('loginPage');
+Route::get('/loginProblem',[Albums::class, 'loginPageProblem'])->name('loginPageProblem');
 Route::post('/login',[Albums::class, 'loginPagePost'])->name('loginPagePost');
 Route::get('/logout',[Albums::class, 'logoutPagePost'])->name('logoutPagePost');
 
@@ -48,6 +48,10 @@ Route::get('/changeMyAccPwd',[Albums::class, 'changeMyAccPwd'])->name('changeMyA
 Route::put('/changeMyAccPwdPost',[Albums::class, 'changeMyAccPwdPost'])->name('changeMyAccPwdPost');
 
 Route::get('/searchWithTags',[Albums::class, 'searchWithTags'])->name('searchWithTags');
+
+
+Route::get('/user_id{id}', [Albums::class, 'profileViewer'])->name('profileViewer');
+Route::get('/albums_user_id{id}', [Albums::class, 'users_albums_viewer'])->name('users_albums_viewer');
 //Route::get('/', function () {
 // return view('myView');
 //});
