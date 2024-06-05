@@ -616,7 +616,7 @@ class Albums extends Controller
         'isThatSearch4AllAlbums'=>$rrq["isThatSearch4AllAlbums"]]);
     }
     
-    public function profileViewer(Request $request, string $id){
+    /*public function profileViewer(Request $request, string $id){
 
         $dataFromDB=DB::select('SELECT * FROM `album_users` where id=?',[$id]);
         
@@ -650,5 +650,5 @@ class Albums extends Controller
         'count'=>$count,'hashtags'=>$hashtag_strings_arrag]);
 
     }
-
+    */
 }
